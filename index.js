@@ -145,12 +145,47 @@ function getCountryWins(data,initials) {
 /* 💪💪💪💪💪 Stretch 2: 💪💪💪💪💪 
 Write a function called getGoals() that accepts a parameter `data` and returns the team with the most goals score per appearance (average goals for) in the World Cup finals */
 
-function getGoals(/* code here */) {
-
-    /* code here */
-
+function getGoals(data) {
+    function updateTeam(teams,name,goals){
+        let team;
+        if(teams.has(name)){
+            team = teams.get(name);
+            team = {
+                goals:team.goals+goals,
+                appearances:team.appearances+1,
+            };
+        }
+        else{
+            team = {
+                goals:goals,
+                appearances:1,
+            };
+        }
+        teams.set(name,team);
+        return teams;
+    }
+    let teams = new Map();
+    data.filter(match => match['Stage'] === 'Final').forEach(function(match){
+        updateTeam(this,match['Home Team Name'],match['Home Team Goals']);
+        updateTeam(this,match['Away Team Name'],match['Away Team Goals'])
+    },teams)
+    let best = {best:null};
+    teams.forEach(function(team,name){
+        if(this.best !== null){
+            if(team.goals/team.appearances > this.best.goals/this.best.appearances){
+                this.best = team;
+                this.best.name = name;
+            }
+        }
+        else{
+            this.best = team;
+            this.best.name = name;
+        }
+    },best);
+    return best.best.name;
 }
-
+// console.log('@@@@@@@@@@@@@@@@@@@@');
+// console.log(getGoals(fifaData));
 
 /* 💪💪💪💪💪 Stretch 3: 💪💪💪💪💪
 Write a function called badDefense() that accepts a parameter `data` and calculates the team with the most goals scored against them per appearance (average goals against) in the World Cup finals */
